@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Unity.Netcode;
 
 public class SceneButtonLoader : MonoBehaviour
 {
@@ -11,7 +12,14 @@ public class SceneButtonLoader : MonoBehaviour
     {
         if (!string.IsNullOrEmpty(sceneName))
         {
-            SceneManager.LoadScene(sceneName);
+            if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsServer)
+            {
+                NetworkManager.Singleton.SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
+            }
+            else
+            {
+                Debug.LogWarning("NetworkManager is not available or not running as server.");
+            }
         }
         else
         {

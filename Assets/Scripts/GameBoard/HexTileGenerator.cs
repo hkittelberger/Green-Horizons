@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
 public class HexTileGenerator : MonoBehaviour
 {
@@ -7,13 +8,12 @@ public class HexTileGenerator : MonoBehaviour
     public class TileType
     {
         public string name;
-        public GameObject prefab;
+        public GameObject TilePrefab;
         public int count;
     }
 
     public int radius = 4;
     public List<TileType> tileTypes;
-
     public GameObject waterTile; // Center tile
 
     public float hexWidth = 3f;      // Width of a flat-top hex
@@ -51,15 +51,20 @@ public class HexTileGenerator : MonoBehaviour
 
             if (cube == Vector3Int.zero)
             {
-                tile = Instantiate(waterTile, pos, Quaternion.identity, this.transform);
+                tile = Instantiate(waterTile, pos, Quaternion.identity);
+                tile.GetComponent<NetworkObject>().Spawn(true);
+                tile.transform.SetParent(this.transform);
             }
             else
             {
-                tile = Instantiate(tilePool[0], pos, Quaternion.identity, this.transform);
+                tile = Instantiate(tilePool[0], pos, Quaternion.identity);
+                tile.GetComponent<NetworkObject>().Spawn(true);
+                tile.transform.SetParent(this.transform);
                 tilePool.RemoveAt(0);
             }
 
-            tile.name = $"Hex_{cube.x}_{cube.y}_{cube.z}";
+            string typeName = tile.name.Replace("(Clone)", "");
+            tile.name = $"{typeName}_{cube.x}_{cube.y}_{cube.z}";
         }
     }
 
@@ -71,7 +76,7 @@ public class HexTileGenerator : MonoBehaviour
         {
             for (int i = 0; i < type.count; i++)
             {
-                pool.Add(type.prefab);
+                pool.Add(type.TilePrefab);
             }
         }
 

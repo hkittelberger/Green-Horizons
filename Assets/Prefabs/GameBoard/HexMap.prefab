@@ -10,9 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 745045703334372562}
   - component: {fileID: 7579423859603722282}
+  - component: {fileID: -8264497383098790435}
   m_Layer: 0
   m_Name: HexMap
-  m_TagString: Untagged
+  m_TagString: HexMap
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -47,20 +48,45 @@ MonoBehaviour:
   radius: 4
   tileTypes:
   - name: Alloy
-    prefab: {fileID: 6417332802668566602, guid: d0c44ac78d899bd4198d8dd75d23bc69, type: 3}
+    TilePrefab: {fileID: 6417332802668566602, guid: d0c44ac78d899bd4198d8dd75d23bc69, type: 3}
     count: 16
   - name: Bricks
-    prefab: {fileID: 6417332802668566602, guid: 28d2de144f29aa0459b70f9c4a52c5d2, type: 3}
+    TilePrefab: {fileID: 6417332802668566602, guid: 28d2de144f29aa0459b70f9c4a52c5d2, type: 3}
     count: 16
   - name: Food
-    prefab: {fileID: 6417332802668566602, guid: 194e3136efc32e544ab3d1551a8ce7c3, type: 3}
+    TilePrefab: {fileID: 6417332802668566602, guid: 194e3136efc32e544ab3d1551a8ce7c3, type: 3}
     count: 16
   - name: Oil
-    prefab: {fileID: 6417332802668566602, guid: 55670ba56da818b419278e4c7319f307, type: 3}
+    TilePrefab: {fileID: 6417332802668566602, guid: 55670ba56da818b419278e4c7319f307, type: 3}
     count: 16
   - name: Water
-    prefab: {fileID: 6417332802668566602, guid: 8a6e69b950974f24ab8c8a9308b06250, type: 3}
+    TilePrefab: {fileID: 6417332802668566602, guid: 8a6e69b950974f24ab8c8a9308b06250, type: 3}
     count: 17
   waterTile: {fileID: 6417332802668566602, guid: 8a6e69b950974f24ab8c8a9308b06250, type: 3}
   hexWidth: 3
   hexHeight: 2.598
+--- !u!114 &-8264497383098790435
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 268051484347816795}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 0
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0

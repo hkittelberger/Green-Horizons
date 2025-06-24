@@ -19,7 +19,10 @@ public class HexTile : MonoBehaviour , IClickable
 
     public void OnClick()
     {
-        Debug.Log("Tile clicked: " + tileData.tileType);
-        HexPopupManager.Instance.ShowPopup(tileData.tileType, transform.position);
+        // Debug.Log("Tile clicked: " + tileData.tileType);
+        // GameManager.Instance.ClickedOnTile(tileData.tileType);
+        // GameManager.Instance.ClickedOnBuild(tileData.tileType, this);
+        GameManager.Instance.ClickedOnBuild(this, null);
+        // HexPopupManager.Instance.ShowPopup(tileData.tileType, transform.position);
     }
 }
