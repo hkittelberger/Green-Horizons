@@ -1,85 +1,77 @@
 using UnityEngine;
-using System;
 using Unity.Netcode;
+using System;
 
-public class GameManager : MonoBehaviour
+public class GameManager : NetworkBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    public Transform hexRenderPrefab;
+    [Header("Prefabs")]
+    [SerializeField] private Transform hexRenderPrefab;
 
-    public event EventHandler<OnClickedOnBuildEventArgs> OnClickedOnBuild;
-    public class OnClickedOnBuildEventArgs : EventArgs
-    {
-        /* public string BuildType { get; private set; }
-        public HexTile Tile { get; private set; } */
-
-        public Transform BuildType;
-        public HexTile Tile;
-
-        /* public OnClickedOnBuild(string buildType, HexTile tile)
-        {
-            BuildType = buildType;
-            Tile = tile;
-        } */
-    }
-
+    // Singleton-safe initialization
     private void Awake()
     {
-        if (Instance == null)
+        if (Instance != null && Instance != this)
         {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+
+    // Networking-safe initialization
+    public override void OnNetworkSpawn()
+    {
+        if (IsServer)
+        {
+            Debug.Log("GameManager OnNetworkSpawn on Server");
+            CreateBoard();
+        }
+    }
+
+    // Ensures only one board is spawned by server
+    private void CreateBoard()
+    {
+        if (hexRenderPrefab == null)
+        {
+            Debug.LogError("HexRenderPrefab is not assigned in GameManager.");
+            return;
+        }
+
+        Vector3 origin = Vector3.zero;
+        Transform hexRender = Instantiate(hexRenderPrefab, origin, Quaternion.identity);
+        NetworkObject networkObject = hexRender.GetComponent<NetworkObject>();
+
+        if (networkObject != null)
+        {
+            networkObject.Spawn(true);
         }
         else
         {
-            Destroy(gameObject);
-        }
-    }
-    
-    private void Start()
-    {
-        // Initialize the game board or any other setup
-        CreateBoard();
-    }
-
-    public void CreateBoard()
-    {
-        // Logic to create the game board
-        Debug.Log("Creating game board...");
-
-        Vector3 origin = new Vector3(0, 0, 0);
-        Transform hexRender = Instantiate(hexRenderPrefab, origin, Quaternion.identity);
-
-        // Only spawn network object if it has NetworkObject component
-        NetworkObject networkObj = hexRender.GetComponent<NetworkObject>();
-        if (networkObj != null)
-        {
-            networkObj.Spawn(true);
+            Debug.LogError("Spawned hexRenderPrefab does not have a NetworkObject.");
         }
     }
 
-    public void ClickedOnTile(string tileType)
+    // Called by UI or input code when player clicks to build
+    public event EventHandler<OnClickedOnBuildEventArgs> OnClickedOnBuild;
+
+    public class OnClickedOnBuildEventArgs : EventArgs
     {
-        // Logic to handle tile click
-        Debug.Log("Tile clicked: " + tileType);
-        /* OnClickedOnBuild?.Invoke(this, new OnClickedOnBuildEventArgs
-        {
-            BuildType = "city",
-            Tile = tileType
-        }); */
+        public BuildingType BuildTypeEnum;
+        public HexTile Tile;
     }
 
-    public void ClickedOnBuild(HexTile tileType, Transform buildType)
+    public void ClickedOnBuild(HexTile tile, BuildingType buildType)
     {
-        // Logic to handle tile click
-        Debug.Log("Tile clicked: " + tileType);
+        Debug.Log($"Clicked on tile: {tile}, with building: {buildType}");
+
         OnClickedOnBuild?.Invoke(this, new OnClickedOnBuildEventArgs
         {
-            BuildType = buildType,
-            Tile = tileType
+            BuildTypeEnum = buildType,
+            Tile = tile
         });
     }
-
-
 }

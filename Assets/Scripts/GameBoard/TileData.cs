@@ -4,7 +4,6 @@ using UnityEngine;
 public class TileData : ScriptableObject
 {
     public string tileType;
-    public Color tileColor;
     public Sprite icon;
     // Add more fields like movementCost, resourceAmount, etc. if needed
 }

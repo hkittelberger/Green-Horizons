@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 
-public class HexTileGenerator : MonoBehaviour
+public class HexTileGenerator : NetworkBehaviour
 {
     [System.Serializable]
     public class TileType
@@ -12,68 +12,97 @@ public class HexTileGenerator : MonoBehaviour
         public int count;
     }
 
+    [Header("Hex Settings")]
     public int radius = 4;
-    public List<TileType> tileTypes;
-    public GameObject waterTile; // Center tile
-
-    public float hexWidth = 3f;      // Width of a flat-top hex
+    public float hexWidth = 3f;      // Flat-top width
     public float hexHeight = 2.598f; // height = width * sqrt(3)/2
 
-    void Start()
+    [Header("Tile Prefabs")]
+    public GameObject waterTile; // Center tile
+    public List<TileType> tileTypes;
+
+    private bool hasGenerated = false;
+
+    public override void OnNetworkSpawn()
     {
-        GenerateHexMap();
+        if (IsServer && !hasGenerated)
+        {
+            GenerateBoard();
+            hasGenerated = true;
+        }
     }
 
-    void GenerateHexMap()
+    private void GenerateBoard()
     {
-        Dictionary<Vector3Int, GameObject> hexMap = new Dictionary<Vector3Int, GameObject>();
-        List<Vector3Int> hexPositions = new List<Vector3Int>();
+        List<Vector3Int> hexPositions = GetHexCoordinates(radius);
+        List<GameObject> tilePool = BuildShuffledTilePool();
 
-        // Build list of cube coords within radius
+        foreach (Vector3Int cube in hexPositions)
+        {
+            Vector3 worldPos = CubeToWorld(cube);
+            GameObject tileToSpawn;
+
+            if (cube == Vector3Int.zero && waterTile != null)
+            {
+                tileToSpawn = waterTile;
+            }
+            else
+            {
+                if (tilePool.Count == 0)
+                {
+                    Debug.LogWarning("Tile pool ran out of prefabs.");
+                    continue;
+                }
+
+                tileToSpawn = tilePool[0];
+                tilePool.RemoveAt(0);
+            }
+
+            GameObject tileGO = Instantiate(tileToSpawn, worldPos, Quaternion.identity);
+
+            if (tileGO.TryGetComponent(out NetworkObject netObj))
+            {
+                netObj.Spawn(true);
+            }
+            else
+            {
+                Debug.LogError($"{tileGO.name} is missing a NetworkObject component.");
+            }
+
+            string cleanedName = tileToSpawn.name.Replace("(Clone)", "").Trim();
+            tileGO.name = $"{cleanedName}_{cube.x}_{cube.y}_{cube.z}";
+            tileGO.transform.SetParent(this.transform);
+        }
+    }
+
+    private List<Vector3Int> GetHexCoordinates(int radius)
+    {
+        List<Vector3Int> hexes = new List<Vector3Int>();
+
         for (int x = -radius; x <= radius; x++)
         {
             for (int y = Mathf.Max(-radius, -x - radius); y <= Mathf.Min(radius, -x + radius); y++)
             {
                 int z = -x - y;
-                Vector3Int cubeCoord = new Vector3Int(x, y, z);
-                hexPositions.Add(cubeCoord);
+                hexes.Add(new Vector3Int(x, y, z));
             }
         }
 
-        // Shuffle tile pool
-        List<GameObject> tilePool = BuildShuffledTilePool();
-
-        // Place tiles
-        foreach (Vector3Int cube in hexPositions)
-        {
-            Vector3 pos = CubeToWorld(cube);
-            GameObject tile;
-
-            if (cube == Vector3Int.zero)
-            {
-                tile = Instantiate(waterTile, pos, Quaternion.identity);
-                tile.GetComponent<NetworkObject>().Spawn(true);
-                tile.transform.SetParent(this.transform);
-            }
-            else
-            {
-                tile = Instantiate(tilePool[0], pos, Quaternion.identity);
-                tile.GetComponent<NetworkObject>().Spawn(true);
-                tile.transform.SetParent(this.transform);
-                tilePool.RemoveAt(0);
-            }
-
-            string typeName = tile.name.Replace("(Clone)", "");
-            tile.name = $"{typeName}_{cube.x}_{cube.y}_{cube.z}";
-        }
+        return hexes;
     }
 
-    List<GameObject> BuildShuffledTilePool()
+    private List<GameObject> BuildShuffledTilePool()
     {
-        List<GameObject> pool = new List<GameObject>();
+        List<GameObject> pool = new();
 
         foreach (var type in tileTypes)
         {
+            if (type.TilePrefab == null)
+            {
+                Debug.LogWarning($"Missing prefab for tile type: {type.name}");
+                continue;
+            }
+
             for (int i = 0; i < type.count; i++)
             {
                 pool.Add(type.TilePrefab);
@@ -84,7 +113,7 @@ public class HexTileGenerator : MonoBehaviour
         return pool;
     }
 
-    void Shuffle<T>(List<T> list)
+    private void Shuffle<T>(List<T> list)
     {
         for (int i = 0; i < list.Count; i++)
         {
@@ -93,11 +122,10 @@ public class HexTileGenerator : MonoBehaviour
         }
     }
 
-    Vector3 CubeToWorld(Vector3Int cube)
+    private Vector3 CubeToWorld(Vector3Int cube)
     {
         float x = hexWidth * 0.75f * cube.x;
         float y = hexHeight * (cube.z + 0.5f * cube.x);
         return new Vector3(x, y, 0f);
     }
-
 }

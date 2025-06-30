@@ -60,107 +60,108 @@ public enum BuildingType
 }
 
 [Serializable]
-public class PrefabEntry<T> where T : Enum
+public class BuildingPrefabEntry
 {
-    [SerializeField] public T type;
-    [SerializeField] public Transform prefab;
-
-    public PrefabEntry(T type, Transform prefab = null)
-    {
-        this.type = type;
-        this.prefab = prefab;
-    }
+    public BuildingType type;
+    public Transform prefab;
 }
 
-[Serializable]
-public class BuildingPrefabEntry : PrefabEntry<BuildingType>
-{
-    public BuildingPrefabEntry(BuildingType type, Transform prefab = null) : base(type, prefab) { }
-}
-
-public class BuildingVisualizer : MonoBehaviour
+public class BuildingVisualizer : NetworkBehaviour
 {
     public static BuildingVisualizer Instance { get; private set; }
-    [SerializeField] private List<BuildingPrefabEntry> buildingPrefabs = new List<BuildingPrefabEntry>();
 
-    // Dictionary for fast lookup during runtime
-    private Dictionary<BuildingType, Transform> buildingPrefabDict;
+    [SerializeField] private List<BuildingPrefabEntry> buildingPrefabs = new();
+    private readonly Dictionary<BuildingType, Transform> buildingPrefabDict = new();
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-            InitializePrefabDictionaries();
-        }
-        else
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
+            return;
         }
+        Instance = this;
     }
 
-    private void Start()
+    public override void OnNetworkSpawn()
     {
-        GameManager.Instance.OnClickedOnBuild += GameManager_OnClickedOnBuild;
-    }
-
-    private void InitializePrefabDictionaries()
-    {
-        // Initialize building prefab dictionary
-        buildingPrefabDict = new Dictionary<BuildingType, Transform>();
-        foreach (var entry in buildingPrefabs)
+        if (IsServer)
         {
-            if (entry.prefab != null)
+            InitializePrefabDictionary();
+
+            if (GameManager.Instance != null)
             {
-                buildingPrefabDict[entry.type] = entry.prefab;
+                GameManager.Instance.OnClickedOnBuild += OnClickedOnBuild;
+            }
+            else
+            {
+                Debug.LogWarning("GameManager instance not ready. BuildingVisualizer will not receive clicks.");
             }
         }
     }
 
-    private void GameManager_OnClickedOnBuild(object sender, GameManager.OnClickedOnBuildEventArgs e)
+    private void InitializePrefabDictionary()
     {
-        // For now, defaulting to City building type
-        // You'll want to modify this to get the building type from the event args
-        SpawnBuilding(BuildingType.City, e.Tile.transform.position);
+        buildingPrefabDict.Clear();
+
+        foreach (var entry in buildingPrefabs)
+        {
+            if (!buildingPrefabDict.ContainsKey(entry.type) && entry.prefab != null)
+            {
+                buildingPrefabDict[entry.type] = entry.prefab;
+            }
+            else if (entry.prefab == null)
+            {
+                Debug.LogWarning($"Missing prefab for {entry.type}");
+            }
+        }
     }
 
-    public void SpawnBuilding(BuildingType buildingType, Vector3 position)
+    private void OnClickedOnBuild(object sender, GameManager.OnClickedOnBuildEventArgs e)
     {
-        if (buildingPrefabDict.TryGetValue(buildingType, out Transform prefab))
+        if (!IsServer)
         {
-            Vector3 adjustedPosition = new Vector3(position.x, position.y, position.z - 0.1f);
-            Transform spawnedBuilding = Instantiate(prefab, adjustedPosition, Quaternion.identity);
+            Debug.LogWarning("Only the server should spawn buildings.");
+            return;
+        }
 
-            // Only spawn network object if it has NetworkObject component
-            /* NetworkObject networkObj = spawnedBuilding.GetComponent<NetworkObject>();
-            if (networkObj != null && NetworkManager.Singleton != null && NetworkManager.Singleton.IsServer)
+        if (TryGetPrefab(e.BuildTypeEnum, out var prefab))
+        {
+            Vector3 adjustedPosition = e.Tile.transform.position + new Vector3(0, 0, -0.1f);
+            Transform spawned = Instantiate(prefab, adjustedPosition, Quaternion.identity);
+
+            if (spawned.TryGetComponent(out NetworkObject netObj))
             {
-                networkObj.Spawn(true);
-            } */
-            NetworkObject networkObj = spawnedBuilding.GetComponent<NetworkObject>();
-            networkObj.Spawn(true);
+                netObj.Spawn(destroyWithScene: true);
+            }
+            else
+            {
+                Debug.LogError($"Prefab for {e.BuildTypeEnum} is missing NetworkObject.");
+            }
         }
         else
         {
-            Debug.LogWarning($"No prefab found for building type: {buildingType}");
+            Debug.LogError($"No prefab found for building type: {e.BuildTypeEnum}");
         }
     }
 
-    public Transform GetBuildingPrefab(BuildingType buildingType)
+    public bool TryGetPrefab(BuildingType type, out Transform prefab)
     {
-        buildingPrefabDict.TryGetValue(buildingType, out Transform prefab);
-        return prefab;
+        return buildingPrefabDict.TryGetValue(type, out prefab);
     }
 
-    // Helper method to initialize lists with all enum values (useful for setup)
+    // Optional utility to auto-fill all enum entries
     [ContextMenu("Initialize All Building Types")]
-    private void InitializeAllBuildingTypes()
+    private void FillMissingBuildingTypes()
     {
-        buildingPrefabs.Clear();
-        foreach (BuildingType buildingType in Enum.GetValues(typeof(BuildingType)))
+        var existingTypes = new HashSet<BuildingType>();
+        foreach (var entry in buildingPrefabs)
+            existingTypes.Add(entry.type);
+
+        foreach (BuildingType type in Enum.GetValues(typeof(BuildingType)))
         {
-            buildingPrefabs.Add(new BuildingPrefabEntry(buildingType));
+            if (!existingTypes.Contains(type))
+                buildingPrefabs.Add(new BuildingPrefabEntry { type = type });
         }
     }
 }
