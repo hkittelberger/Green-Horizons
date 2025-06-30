@@ -117,31 +117,30 @@ public class BuildingVisualizer : NetworkBehaviour
         }
     }
 
+
     private void OnClickedOnBuild(object sender, GameManager.OnClickedOnBuildEventArgs e)
     {
-        if (!IsServer)
-        {
-            Debug.LogWarning("Only the server should spawn buildings.");
-            return;
-        }
+        SpawnBuildingRpc(e.BuildTypeEnum, e.Tile.transform.position + new Vector3(0, 0, -0.1f));
+    }
 
-        if (TryGetPrefab(e.BuildTypeEnum, out var prefab))
+    [Rpc(SendTo.Server)]
+    private void SpawnBuildingRpc(BuildingType type, Vector3 position)
+    {
+        if (TryGetPrefab(type, out var prefab))
         {
-            Vector3 adjustedPosition = e.Tile.transform.position + new Vector3(0, 0, -0.1f);
-            Transform spawned = Instantiate(prefab, adjustedPosition, Quaternion.identity);
-
+            Transform spawned = Instantiate(prefab, position, Quaternion.identity);
             if (spawned.TryGetComponent(out NetworkObject netObj))
             {
                 netObj.Spawn(destroyWithScene: true);
             }
             else
             {
-                Debug.LogError($"Prefab for {e.BuildTypeEnum} is missing NetworkObject.");
+                Debug.LogError($"Prefab for {type} is missing NetworkObject.");
             }
         }
         else
         {
-            Debug.LogError($"No prefab found for building type: {e.BuildTypeEnum}");
+            Debug.LogError($"No prefab found for building type: {type}");
         }
     }
 

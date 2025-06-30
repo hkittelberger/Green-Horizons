@@ -66,7 +66,35 @@ public class GameManager : NetworkBehaviour
 
     public void ClickedOnBuild(HexTile tile, BuildingType buildType)
     {
-        Debug.Log($"Clicked on tile: {tile}, with building: {buildType}");
+        if (tile == null)
+        {
+            Debug.LogError("Clicked tile is null.");
+            return;
+        }
+
+        // If we're the server, handle the build directly
+        if (IsServer)
+        {
+            HandleBuild(tile, buildType);
+        }
+        else
+        {
+            // If client, forward request to server
+            var netObj = tile.GetComponent<NetworkObject>();
+            if (netObj != null)
+            {
+                RequestBuildServerRpc(netObj, buildType);
+            }
+            else
+            {
+                Debug.LogError("HexTile does not have a NetworkObject component.");
+            }
+        }
+    }
+
+    private void HandleBuild(HexTile tile, BuildingType buildType)
+    {
+        Debug.Log($"[Server] Build requested: {buildType} on tile {tile.name}");
 
         OnClickedOnBuild?.Invoke(this, new OnClickedOnBuildEventArgs
         {
@@ -74,4 +102,24 @@ public class GameManager : NetworkBehaviour
             Tile = tile
         });
     }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void RequestBuildServerRpc(NetworkObjectReference tileRef, BuildingType buildType)
+    {
+        if (!tileRef.TryGet(out NetworkObject tileObj))
+        {
+            Debug.LogError("Invalid tile reference sent to server.");
+            return;
+        }
+
+        HexTile tile = tileObj.GetComponent<HexTile>();
+        if (tile == null)
+        {
+            Debug.LogError("NetworkObject does not contain a HexTile component.");
+            return;
+        }
+
+        HandleBuild(tile, buildType);
+    }
+
 }
