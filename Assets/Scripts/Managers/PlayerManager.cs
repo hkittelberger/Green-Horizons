@@ -63,7 +63,30 @@ public class PlayerManager : NetworkBehaviour
             AllPlayerData[clientId] = data;
 
             Debug.Log($"[PlayerManager] Assigned Player {clientId} color {assignedColor}");
+
+            // Sync data to client
+            SyncPlayerDataClientRpc(clientId, assignedColor.r, assignedColor.g, assignedColor.b,
+                data.water, data.alloy, data.oil, data.food, data.brick);
         }
+    }
+
+    [ClientRpc]
+    private void SyncPlayerDataClientRpc(ulong clientId, float r, float g, float b, int water, int alloy, int oil, int food, int brick)
+    {
+        if (NetworkManager.Singleton.LocalClientId != clientId) return;
+
+        Color color = new Color(r, g, b);
+        var data = new PlayerData(color)
+        {
+            water = water,
+            alloy = alloy,
+            oil = oil,
+            food = food,
+            brick = brick
+        };
+
+        AllPlayerData[clientId] = data;
+        Debug.Log($"[PlayerManager] Synced PlayerData on client {clientId} with color {color}");
     }
     
     public PlayerData GetPlayerData(ulong clientId)

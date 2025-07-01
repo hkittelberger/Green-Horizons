@@ -17,10 +17,10 @@ public class PlayerData
         playerColor = color;
 
         // Initialize default resources (customize as needed)
-        water = 0;
+        water = 3;
         alloy = 0;
         oil = 0;
-        food = 0;
-        brick = 0;
+        food = 5;
+        brick = 3;
     }
 }

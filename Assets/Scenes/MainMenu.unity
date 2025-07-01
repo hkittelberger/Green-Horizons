@@ -168,6 +168,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2796754111231571324, guid: d81f3106f1ef35e45a49f83f854380f7, type: 3}
     - target: {fileID: 2773948611554593675, guid: e8310b82cd9f44143bfd5f7b5f2d03bd, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 2773948611554593675, guid: e8310b82cd9f44143bfd5f7b5f2d03bd, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 2773948611554593675, guid: e8310b82cd9f44143bfd5f7b5f2d03bd, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: -1
       objectReference: {fileID: 0}
@@ -178,6 +186,14 @@ PrefabInstance:
     - target: {fileID: 5526541811185133501, guid: e8310b82cd9f44143bfd5f7b5f2d03bd, type: 3}
       propertyPath: m_text
       value: Play
+      objectReference: {fileID: 0}
+    - target: {fileID: 5526541811185133501, guid: e8310b82cd9f44143bfd5f7b5f2d03bd, type: 3}
+      propertyPath: m_fontSize
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 5526541811185133501, guid: e8310b82cd9f44143bfd5f7b5f2d03bd, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 5645566146843276447, guid: e8310b82cd9f44143bfd5f7b5f2d03bd, type: 3}
       propertyPath: m_Name

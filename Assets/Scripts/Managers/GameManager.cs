@@ -8,7 +8,6 @@ public class GameManager : NetworkBehaviour
 
     [Header("Prefabs")]
     [SerializeField] private Transform hexRenderPrefab;
-    private PlayerManager playerManager;
 
     // Singleton-safe initialization
     private void Awake()
