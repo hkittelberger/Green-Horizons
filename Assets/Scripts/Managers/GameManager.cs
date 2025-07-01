@@ -8,6 +8,7 @@ public class GameManager : NetworkBehaviour
 
     [Header("Prefabs")]
     [SerializeField] private Transform hexRenderPrefab;
+    private PlayerManager playerManager;
 
     // Singleton-safe initialization
     private void Awake()
@@ -19,7 +20,7 @@ public class GameManager : NetworkBehaviour
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
+        // DontDestroyOnLoad(gameObject);
     }
 
     // Networking-safe initialization
@@ -27,7 +28,6 @@ public class GameManager : NetworkBehaviour
     {
         if (IsServer)
         {
-            Debug.Log("GameManager OnNetworkSpawn on Server");
             CreateBoard();
         }
     }
@@ -62,6 +62,7 @@ public class GameManager : NetworkBehaviour
     {
         public BuildingType BuildTypeEnum;
         public HexTile Tile;
+        public ulong BuilderClientId;
     }
 
     public void ClickedOnBuild(HexTile tile, BuildingType buildType)
@@ -75,7 +76,7 @@ public class GameManager : NetworkBehaviour
         // If we're the server, handle the build directly
         if (IsServer)
         {
-            HandleBuild(tile, buildType);
+            HandleBuild(tile, buildType, NetworkManager.Singleton.LocalClientId);
         }
         else
         {
@@ -92,19 +93,20 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-    private void HandleBuild(HexTile tile, BuildingType buildType)
+    private void HandleBuild(HexTile tile, BuildingType buildType, ulong builderClientId)
     {
-        Debug.Log($"[Server] Build requested: {buildType} on tile {tile.name}");
+        Debug.Log($"[Server] Build requested: {buildType} on tile {tile.name} by client {builderClientId}");
 
         OnClickedOnBuild?.Invoke(this, new OnClickedOnBuildEventArgs
         {
             BuildTypeEnum = buildType,
-            Tile = tile
+            Tile = tile,
+            BuilderClientId = builderClientId,
         });
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void RequestBuildServerRpc(NetworkObjectReference tileRef, BuildingType buildType)
+    private void RequestBuildServerRpc(NetworkObjectReference tileRef, BuildingType buildType, ServerRpcParams rpcParams = default)
     {
         if (!tileRef.TryGet(out NetworkObject tileObj))
         {
@@ -119,7 +121,8 @@ public class GameManager : NetworkBehaviour
             return;
         }
 
-        HandleBuild(tile, buildType);
-    }
+        ulong senderClientId = rpcParams.Receive.SenderClientId;
 
+        HandleBuild(tile, buildType, senderClientId);
+    }
 }

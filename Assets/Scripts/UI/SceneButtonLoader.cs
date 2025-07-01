@@ -81,7 +81,7 @@ public class SceneButtonLoader : MonoBehaviour
             if (netObj != null)
             {
                 netObj.Spawn(true);
-                Debug.Log($"{prefab.name} spawned by server.");
+                // Debug.Log($"{prefab.name} spawned by server.");
             }
             else
             {

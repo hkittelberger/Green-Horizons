@@ -58,7 +58,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 0
+  GlobalObjectIdHash: 904482556
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -116,16 +116,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  buildingPrefabs:
-  - type: 0
-    prefab: {fileID: 745330011399226271, guid: 0da40d331a2748745b015794552d7496, type: 3}
-  - type: 5
-    prefab: {fileID: 745330011399226271, guid: 1fdd6deb660e6614688e9da0804df271, type: 3}
-  - type: 4
-    prefab: {fileID: 745330011399226271, guid: 34161880b81c27c43a38c34ea27972b0, type: 3}
-  - type: 3
-    prefab: {fileID: 745330011399226271, guid: bc2252129aeacef48a3ecb3129486459, type: 3}
-  - type: 2
-    prefab: {fileID: 745330011399226271, guid: c914c7cd0bcb27d4197166437e282ecc, type: 3}
-  - type: 1
-    prefab: {fileID: 745330011399226271, guid: 32bca621eb458d048a076cf5ce7c0d42, type: 3}

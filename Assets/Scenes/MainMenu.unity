@@ -149,7 +149,7 @@ PrefabInstance:
       objectReference: {fileID: 5400845344563598744, guid: 6888674e4543a7b43a1e0408e161de83, type: 3}
     - target: {fileID: 1939945192155629485, guid: e8310b82cd9f44143bfd5f7b5f2d03bd, type: 3}
       propertyPath: managerPrefabs.Array.size
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 1939945192155629485, guid: e8310b82cd9f44143bfd5f7b5f2d03bd, type: 3}
       propertyPath: 'managerPrefabs.Array.data[0]'
@@ -159,6 +159,14 @@ PrefabInstance:
       propertyPath: 'managerPrefabs.Array.data[1]'
       value: 
       objectReference: {fileID: 3994509317635393392, guid: 90df431e7fd4f03438ffd48697e08795, type: 3}
+    - target: {fileID: 1939945192155629485, guid: e8310b82cd9f44143bfd5f7b5f2d03bd, type: 3}
+      propertyPath: 'managerPrefabs.Array.data[2]'
+      value: 
+      objectReference: {fileID: 3093563300931721435, guid: 0847a13f9fd029846b1871163266a67b, type: 3}
+    - target: {fileID: 1939945192155629485, guid: e8310b82cd9f44143bfd5f7b5f2d03bd, type: 3}
+      propertyPath: 'managerPrefabs.Array.data[3]'
+      value: 
+      objectReference: {fileID: 2796754111231571324, guid: d81f3106f1ef35e45a49f83f854380f7, type: 3}
     - target: {fileID: 2773948611554593675, guid: e8310b82cd9f44143bfd5f7b5f2d03bd, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: -1
