@@ -29,7 +29,7 @@ public class HexTile : MonoBehaviour, IClickable
     public void OnClick()
     {
         // For now, we hardcode the building type to City
-        GameManager.Instance.ClickedOnBuild(this, BuildingType.City);
+        GameManager.Instance.ClickedOnBuild(this, BuildingSelectionManager.Instance.CurrentSelected);
 
         // Future expansion: use tileData to determine allowed building types
         // Example:

@@ -18,5 +18,5 @@ MonoBehaviour:
   costOil: 0
   costFood: 0
   costBrick: 0
-  prefab: {fileID: 0}
-  icon: {fileID: 0}
+  prefab: {fileID: 4352845176460422216, guid: 32bca621eb458d048a076cf5ce7c0d42, type: 3}
+  icon: {fileID: 7482667652216324306, guid: 3207bfaae1d43de44a75a4cda14fc998, type: 3}

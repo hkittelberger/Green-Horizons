@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8fbc0bc9e3322334790a7f79a782dce6, type: 3}
-  m_Name: HurricanShieldData
+  m_Name: HurricaneShieldData
   m_EditorClassIdentifier: Assembly-CSharp::BuildingDefinition
   displayName: 
   costWater: 0
@@ -18,5 +18,5 @@ MonoBehaviour:
   costOil: 0
   costFood: 0
   costBrick: 0
-  prefab: {fileID: 0}
-  icon: {fileID: 0}
+  prefab: {fileID: 4352845176460422216, guid: 1fdd6deb660e6614688e9da0804df271, type: 3}
+  icon: {fileID: 3625043607559282579, guid: 6a5b3a71bbf8d6e46978783c2966c2e8, type: 3}

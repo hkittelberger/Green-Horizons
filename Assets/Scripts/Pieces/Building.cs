@@ -16,6 +16,7 @@ public class Building : NetworkBehaviour
         ownerClientId = clientId;
         ownerColor = color;
         ApplyColor();
+        ApplySprite();
     }
 
     private void ApplyColor()
@@ -29,11 +30,27 @@ public class Building : NetworkBehaviour
             Debug.LogWarning("No SpriteRenderer found on building.");
     }
 
+    private void ApplySprite()
+    {
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
+        if (definition != null && definition.icon != null && spriteRenderer != null)
+        {
+            spriteRenderer.sprite = definition.icon;
+        }
+        else
+        {
+            Debug.LogWarning($"[Building] Could not set sprite. Definition or icon is missing on {gameObject.name}");
+        }
+    }
+
     [ClientRpc]
     public void SetColorClientRpc(float r, float g, float b, float a)
     {
         ownerColor = new Color(r, g, b, a);
         ApplyColor();
+        ApplySprite();
     }
 
     public ulong GetOwnerId() => ownerClientId;

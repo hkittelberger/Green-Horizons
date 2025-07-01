@@ -57,7 +57,7 @@ public class BuildingManager : NetworkBehaviour
     {
         if (!IsServer || building == null) return;
         allSpawned.Add(building);
-        Debug.Log($"[BuildingManager] Registered building: {building.GetDisplayName()}");
+        // Debug.Log($"[BuildingManager] Registered building: {building.GetDisplayName()}");
     }
 
     public List<Building> GetSpawnedBuildings() => allSpawned;

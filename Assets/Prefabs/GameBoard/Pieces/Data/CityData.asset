@@ -19,4 +19,4 @@ MonoBehaviour:
   costFood: 0
   costBrick: 0
   prefab: {fileID: 4352845176460422216, guid: 0da40d331a2748745b015794552d7496, type: 3}
-  icon: {fileID: 0}
+  icon: {fileID: 7482667652216324306, guid: 28692351c39a6dd4dbcceef757f65c9a, type: 3}
