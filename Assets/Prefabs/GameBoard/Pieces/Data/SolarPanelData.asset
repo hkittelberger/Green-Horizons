@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fbc0bc9e3322334790a7f79a782dce6, type: 3}
   m_Name: SolarPanelData
   m_EditorClassIdentifier: Assembly-CSharp::BuildingDefinition
-  displayName: 
+  displayName: Solar Panel
   costWater: 0
   costAlloy: 0
   costOil: 0

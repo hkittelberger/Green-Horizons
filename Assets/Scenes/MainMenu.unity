@@ -131,6 +131,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Play
       objectReference: {fileID: 0}
+    - target: {fileID: 1131849583320905493, guid: e8310b82cd9f44143bfd5f7b5f2d03bd, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1939945192155629485, guid: e8310b82cd9f44143bfd5f7b5f2d03bd, type: 3}
       propertyPath: sceneName
       value: SampleScene

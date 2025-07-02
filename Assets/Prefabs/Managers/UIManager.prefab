@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6422556433344819405}
   - component: {fileID: 7023990630292234255}
   - component: {fileID: 8972932954404446673}
+  - component: {fileID: 6706231242922186433}
   m_Layer: 0
   m_Name: UIManager
   m_TagString: Untagged
@@ -60,6 +61,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f674142baf5689541a2489042e0489ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildingOptions: []
+  buildingOptions:
+  - type: 1
+    background: {fileID: 0}
+  - type: 0
+    background: {fileID: 0}
+  - type: 4
+    background: {fileID: 0}
+  - type: 5
+    background: {fileID: 0}
+  - type: 3
+    background: {fileID: 0}
+  - type: 2
+    background: {fileID: 0}
   selectedColor: {r: 1, g: 0, b: 0, a: 1}
   defaultColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+--- !u!114 &6706231242922186433
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3770160052805800107}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b0d1ac4c6ae08c4bb33445c43a71cb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltipRoot: {fileID: 0}
+  nameText: {fileID: 0}
+  costText: {fileID: 0}
