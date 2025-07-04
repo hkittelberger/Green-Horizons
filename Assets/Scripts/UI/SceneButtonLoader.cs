@@ -49,6 +49,18 @@ public class SceneButtonLoader : MonoBehaviour
             return;
         }
 
+        if (NetworkManager.Singleton == null)
+        {
+            Debug.LogError("Server scene load attempted without a valid NetworkManager.");
+            return;
+        }
+
+        if (NetworkManager.Singleton.SceneManager == null)
+        {
+            Debug.LogError("SceneManager is null — ensure NetworkManager has started.");
+            return;
+        }
+
         Debug.Log($"Server loading scene: {targetScene}");
 
         // Listen once for scene load complete
