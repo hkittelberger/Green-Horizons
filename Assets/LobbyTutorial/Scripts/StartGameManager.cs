@@ -9,7 +9,16 @@ using UnityEngine.SceneManagement;
 public class StartGameManager : MonoBehaviour
 {
 
+     [Header("Manager Prefabs (must have NetworkObject)")]
+    [SerializeField] private GameObject[] managerPrefabs;
 
+    [Header("Name of the scene to load via NetworkManager.SceneManager")]
+    [SerializeField] private string gameSceneName = "GameScene";
+
+    private void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
 
     private void Start()
     {
@@ -18,17 +27,34 @@ public class StartGameManager : MonoBehaviour
 
     private void LobbyManager_OnLobbyStartGame(object sender, LobbyManager.LobbyEventArgs e)
     {
-        Debug.Log("LobbyManager_OnLobbyStartGame called");
-        // Start Game!
+        // Debug.Log("LobbyManager_OnLobbyStartGame called");
         if (LobbyManager.IsHost)
         {
-            CreateRelay();
+            CreateRelayAndStart();
         }
         else
         {
             JoinRelay(LobbyManager.RelayJoinCode);
         }
-        SceneManager.LoadScene(1);
+    }
+
+    // only once per load
+    private void OnLoadComplete(ulong clientId, string scene, LoadSceneMode mode)
+    {
+        if (!NetworkManager.Singleton.IsServer || scene != gameSceneName) return;
+        NetworkManager.Singleton.SceneManager.OnLoadComplete -= OnLoadComplete;
+
+        // spawn your manager prefabs on the server
+        foreach (var prefab in managerPrefabs)
+        {
+            if (prefab == null || GameObject.Find(prefab.name) != null) continue;
+            var inst = Instantiate(prefab);
+            var netObj = inst.GetComponent<NetworkObject>();
+            if (netObj != null)
+                netObj.Spawn(true);
+            else
+                Debug.LogError($"'{prefab.name}' missing NetworkObject");
+        }
     }
 
     public void StartHost()
@@ -42,10 +68,10 @@ public class StartGameManager : MonoBehaviour
     }
 
 
-    private async void CreateRelay()
+    private async void CreateRelayAndStart()
     {
         var allocation = await RelayService.Instance.CreateAllocationAsync(3);
-        var joinCode   = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
+        var joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
 
         var t = NetworkManager.Singleton.GetComponent<UnityTransport>();
         t.SetRelayServerData(
@@ -58,9 +84,15 @@ public class StartGameManager : MonoBehaviour
 
         // Debug.Log($"Relay Join Code: {joinCode}");
         // Debug.Log("Starting Host with Relay...");
-        NetworkManager.Singleton.StartHost();
+        StartHost();
         // Debug.Log("Host started successfully.");
         LobbyManager.Instance.SetRelayJoinCode(joinCode);
+        
+        NetworkManager.Singleton.SceneManager.OnLoadComplete += OnLoadComplete;
+        NetworkManager.Singleton.SceneManager.LoadScene(
+            gameSceneName,
+            LoadSceneMode.Single
+        );
     }
 
     private async void JoinRelay(string joinCode)
@@ -79,7 +111,7 @@ public class StartGameManager : MonoBehaviour
 
         // Debug.Log("Joining Relay with Join Code: " + joinCode);
         // Debug.Log("Starting Client with Relay...");
-        NetworkManager.Singleton.StartClient();
+        StartClient();
         // Debug.Log("Client started successfully.");
     }
 }

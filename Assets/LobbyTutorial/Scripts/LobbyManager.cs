@@ -417,7 +417,7 @@ public class LobbyManager : MonoBehaviour {
 
         IsHost = false;
         RelayJoinCode = relayJoinCode;
-        SceneManager.LoadScene(1);
+        // SceneManager.LoadScene(1);
         alreadyStartedGame = true;
         OnLobbyStartGame?.Invoke(this, new LobbyEventArgs { lobby = joinedLobby });
     }
