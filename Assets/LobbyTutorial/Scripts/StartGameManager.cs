@@ -4,9 +4,12 @@ using Unity.Networking.Transport.Relay;
 using Unity.Services.Relay.Models;
 using Unity.Services.Relay;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class StartGameManager : MonoBehaviour
 {
+
+
 
     private void Start()
     {
@@ -19,12 +22,13 @@ public class StartGameManager : MonoBehaviour
         // Start Game!
         if (LobbyManager.IsHost)
         {
-            CreateRelayAsync();
+            CreateRelay();
         }
         else
         {
-            JoinRelayAsync(LobbyManager.RelayJoinCode);
+            JoinRelay(LobbyManager.RelayJoinCode);
         }
+        SceneManager.LoadScene(1);
     }
 
     public void StartHost()
@@ -38,57 +42,44 @@ public class StartGameManager : MonoBehaviour
     }
 
 
-    private async void CreateRelayAsync()
+    private async void CreateRelay()
     {
-        try
-        {
-            Allocation allocation = await RelayService.Instance.CreateAllocationAsync(3);
+        var allocation = await RelayService.Instance.CreateAllocationAsync(3);
+        var joinCode   = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
 
-            string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
-            Debug.Log("Allocated Relay JoinCode: " + joinCode);
+        var t = NetworkManager.Singleton.GetComponent<UnityTransport>();
+        t.SetRelayServerData(
+            allocation.RelayServer.IpV4,
+            (ushort)allocation.RelayServer.Port,
+            allocation.AllocationIdBytes,
+            allocation.Key,
+            allocation.ConnectionData
+        );
 
-            // Configure transport
-            var transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-            transport.SetRelayServerData(
-                allocation.RelayServer.IpV4,
-                (ushort)allocation.RelayServer.Port,
-                allocation.AllocationIdBytes,
-                allocation.Key,
-                allocation.ConnectionData
-            );
-
-            StartHost();
-
-            LobbyManager.Instance.SetRelayJoinCode(joinCode);
-        }
-        catch (RelayServiceException e)
-        {
-            Debug.Log(e);
-        }
+        // Debug.Log($"Relay Join Code: {joinCode}");
+        // Debug.Log("Starting Host with Relay...");
+        NetworkManager.Singleton.StartHost();
+        // Debug.Log("Host started successfully.");
+        LobbyManager.Instance.SetRelayJoinCode(joinCode);
     }
 
-    private async void JoinRelayAsync(string joinCode)
+    private async void JoinRelay(string joinCode)
     {
-        try
-        {
-            JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
+        var joinAlloc = await RelayService.Instance.JoinAllocationAsync(joinCode);
 
-            var transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-            transport.SetRelayServerData(
-                joinAllocation.RelayServer.IpV4,
-                (ushort)joinAllocation.RelayServer.Port,
-                joinAllocation.AllocationIdBytes,
-                joinAllocation.Key,
-                joinAllocation.ConnectionData,
-                joinAllocation.HostConnectionData
-            );
+        var t = NetworkManager.Singleton.GetComponent<UnityTransport>();
+        t.SetRelayServerData(
+            joinAlloc.RelayServer.IpV4,
+            (ushort)joinAlloc.RelayServer.Port,
+            joinAlloc.AllocationIdBytes,
+            joinAlloc.Key,
+            joinAlloc.ConnectionData,
+            joinAlloc.HostConnectionData
+        );
 
-            StartClient();
-        }
-        catch (RelayServiceException e)
-        {
-            Debug.Log(e);
-        }
+        // Debug.Log("Joining Relay with Join Code: " + joinCode);
+        // Debug.Log("Starting Client with Relay...");
+        NetworkManager.Singleton.StartClient();
+        // Debug.Log("Client started successfully.");
     }
-
 }
