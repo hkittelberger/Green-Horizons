@@ -26,7 +26,10 @@ public class BuildingVisualizer : NetworkBehaviour
 
     private void OnClickedOnBuild(object sender, GameManager.OnClickedOnBuildEventArgs e)
     {
-        SpawnBuildingRpc(e.BuildTypeEnum, e.Tile.transform.position + new Vector3(0, 0, -0.1f), e.BuilderClientId);
+        if (e.BuildTypeEnum != BuildingType.None)
+        {
+            SpawnBuildingRpc(e.BuildTypeEnum, e.Tile.transform.position + new Vector3(0, 0, -0.1f), e.BuilderClientId);
+        }
     }
 
     [Rpc(SendTo.Server)]
