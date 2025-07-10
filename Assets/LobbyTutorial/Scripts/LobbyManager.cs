@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Lobbies;
@@ -75,7 +76,7 @@ public class LobbyManager : MonoBehaviour {
         HandleLobbyPolling();
     }
 
-    public async void Authenticate(string playerName) {
+    public async Task Authenticate(string playerName) {
         playerName = playerName.Replace(" ", "_");
         this.playerName = playerName;
         InitializationOptions initializationOptions = new InitializationOptions();

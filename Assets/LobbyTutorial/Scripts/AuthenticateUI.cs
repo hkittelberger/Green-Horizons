@@ -12,6 +12,12 @@ public class AuthenticateUI : MonoBehaviour {
     private void Awake() {
         authenticateButton.onClick.AddListener(() => {
             LobbyManager.Instance.Authenticate(EditPlayerName.Instance.GetPlayerName());
+
+            if (EditPlayerName.Instance != null)
+            {
+                EditPlayerName.Instance.gameObject.SetActive(false);
+            }
+
             Hide();
         });
     }
