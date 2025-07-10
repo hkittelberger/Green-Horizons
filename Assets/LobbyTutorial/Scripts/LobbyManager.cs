@@ -62,13 +62,20 @@ public class LobbyManager : MonoBehaviour {
 
 
     private void Awake() {
+        if (Instance != null && Instance != this) {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
     private void Update() {
         //HandleRefreshLobbyList(); // Disabled Auto Refresh for testing with multiple builds
-        HandleLobbyHeartbeat();
-        HandleLobbyPolling();
+        if (SceneManager.GetActiveScene().name == "LobbyTutorial_Done") {
+            HandleLobbyHeartbeat();
+            HandleLobbyPolling();
+        }
     }
 
     public async void Authenticate(string playerName) {
@@ -360,7 +367,6 @@ public class LobbyManager : MonoBehaviour {
 
             IsHost = true;
             alreadyStartedGame = true;
-            // SceneManager.LoadScene(1);
 
             OnLobbyStartGame?.Invoke(this, new LobbyEventArgs { lobby = joinedLobby });
         } catch (LobbyServiceException e) {
@@ -377,7 +383,7 @@ public class LobbyManager : MonoBehaviour {
 
         IsHost = false;
         RelayJoinCode = relayJoinCode;
-        // SceneManager.LoadScene(1);
+
         alreadyStartedGame = true;
         OnLobbyStartGame?.Invoke(this, new LobbyEventArgs { lobby = joinedLobby });
     }
