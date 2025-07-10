@@ -42,10 +42,13 @@ public class LobbyManager : MonoBehaviour {
         public List<Lobby> lobbyList;
     }
 
-    public enum PlayerCharacter {
-        Marine,
-        Ninja,
-        Zombie
+    public enum PlayerCharacter
+    {
+        Unassigned,
+        Red,
+        Blue,
+        Green,
+        Yellow
     }
 
 
@@ -178,7 +181,7 @@ public class LobbyManager : MonoBehaviour {
     private Player GetPlayer() {
         return new Player(AuthenticationService.Instance.PlayerId, null, new Dictionary<string, PlayerDataObject> {
             { KEY_PLAYER_NAME, new PlayerDataObject(PlayerDataObject.VisibilityOptions.Public, playerName) },
-            { KEY_PLAYER_CHARACTER, new PlayerDataObject(PlayerDataObject.VisibilityOptions.Public, PlayerCharacter.Marine.ToString()) }
+            { KEY_PLAYER_CHARACTER, new PlayerDataObject(PlayerDataObject.VisibilityOptions.Public, PlayerCharacter.Unassigned.ToString()) }
         });
     }
 
