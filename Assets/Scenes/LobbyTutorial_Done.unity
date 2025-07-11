@@ -7616,14 +7616,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5300739888810594657, guid: a89b7f23954364f49a53fa4ea6d5b8a0, type: 3}
-      propertyPath: managerPrefabs.Array.size
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 5300739888810594657, guid: a89b7f23954364f49a53fa4ea6d5b8a0, type: 3}
-      propertyPath: 'managerPrefabs.Array.data[3]'
-      value: 
-      objectReference: {fileID: 3093563300931721435, guid: 0847a13f9fd029846b1871163266a67b, type: 3}
     - target: {fileID: 8333306962485129379, guid: a89b7f23954364f49a53fa4ea6d5b8a0, type: 3}
       propertyPath: m_Name
       value: StartGameManager

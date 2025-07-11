@@ -5,15 +5,19 @@ using Unity.Services.Relay.Models;
 using Unity.Services.Relay;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class StartGameManager : MonoBehaviour
 {
 
-     [Header("Manager Prefabs (must have NetworkObject)")]
+    [Header("Manager Prefabs (must have NetworkObject)")]
     [SerializeField] private GameObject[] managerPrefabs;
 
     [Header("Name of the scene to load via NetworkManager.SceneManager")]
     [SerializeField] private string gameSceneName = "GameScene";
+
+    [Header("Local Camera (non-networked)")]
+    [SerializeField] private GameObject playerCameraPrefab;
 
     private void Awake()
     {
@@ -23,6 +27,25 @@ public class StartGameManager : MonoBehaviour
     private void Start()
     {
         LobbyManager.Instance.OnLobbyStartGame += LobbyManager_OnLobbyStartGame;
+    }
+
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // only run on clients, and only for our game scene
+        if (!NetworkManager.Singleton.IsClient || scene.name != gameSceneName)
+            return;
+
+        SpawnLocalCamera();
     }
 
     private void LobbyManager_OnLobbyStartGame(object sender, LobbyManager.LobbyEventArgs e)
@@ -87,7 +110,7 @@ public class StartGameManager : MonoBehaviour
         StartHost();
         // Debug.Log("Host started successfully.");
         LobbyManager.Instance.SetRelayJoinCode(joinCode);
-        
+
         NetworkManager.Singleton.SceneManager.OnLoadComplete += OnLoadComplete;
         NetworkManager.Singleton.SceneManager.LoadScene(
             gameSceneName,
@@ -113,5 +136,27 @@ public class StartGameManager : MonoBehaviour
         // Debug.Log("Starting Client with Relay...");
         StartClient();
         // Debug.Log("Client started successfully.");
+    }
+
+    private void SpawnLocalCamera()
+    {
+        if (playerCameraPrefab == null)
+        {
+            Debug.LogError("PlayerCameraPrefab not assigned on StartGameManager.");
+            return;
+        }
+
+        // figure out this client's index among connected clients
+        var clients = NetworkManager.Singleton.ConnectedClientsList;
+        var clientList = clients.ToList();
+        int idx = clientList.FindIndex(c => c.ClientId == NetworkManager.Singleton.LocalClientId);
+
+        // instantiate and set up
+        var camObj = Instantiate(playerCameraPrefab);
+        float startAngle = idx * 90f;              // 0°, 90°, 180°, 270° …
+        camObj.transform.position = new Vector3(0f, 0f, -100f);
+        camObj.transform.rotation = Quaternion.Euler(0, 0, startAngle);
+
+        camObj.tag = "MainCamera";
     }
 }
