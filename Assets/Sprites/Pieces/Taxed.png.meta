@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 6625faad22fcf444a9063c1761a8fca9
+guid: 294c57f601188ec49959db512cee4169
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -52,7 +52,7 @@ TextureImporter:
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 256
-  spriteBorder: {x: 4, y: 4, z: 4, w: 4}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
@@ -139,25 +139,19 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Triangle
+      name: Square
       rect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 256
         height: 256
-      alignment: 9
-      pivot: {x: 0.5, y: 0.28866667}
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
-      outline:
-      - - {x: 0, y: 93.70251}
-        - {x: -128, y: -128}
-        - {x: 128, y: -128}
-      physicsShape:
-      - - {x: 0, y: 93.70251}
-        - {x: -128, y: -128}
-        - {x: 128, y: -128}
+      outline: []
+      physicsShape: []
       tessellationDetail: 0
       bones: []
       spriteID: 2d009a6b596c7d760800000000000000
@@ -184,7 +178,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Triangle: 7482667652216324306
+      Square: 7482667652216324306
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
